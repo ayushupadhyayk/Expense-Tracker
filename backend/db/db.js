@@ -2,14 +2,16 @@ const fs = require('fs');
 const path = require('path');
 const mongoose = require('mongoose');
 
+let localServer = null
+
 // Without MONGO_URL, start a local MongoDB (dev only) that keeps its data in backend/.data.
 const localMongoUrl = async () => {
     const { MongoMemoryServer } = require('mongodb-memory-server')
     const dbPath = path.join(__dirname, '..', '.data')
     fs.mkdirSync(dbPath, {recursive: true})
-    const server = await MongoMemoryServer.create({instance: {dbPath, storageEngine: 'wiredTiger'}})
+    localServer = await MongoMemoryServer.create({instance: {dbPath, storageEngine: 'wiredTiger'}})
     console.log('No MONGO_URL set: using the built-in local database (backend/.data)')
-    return server.getUri('expense-tracker')
+    return localServer.getUri('expense-tracker')
 }
 
 const db = async () => {
@@ -18,4 +20,13 @@ const db = async () => {
     console.log('Db Connected')
 }
 
-module.exports = {db}
+// Disconnects and, for the built-in database, stops MongoDB while keeping its data.
+const closeDb = async () => {
+    await mongoose.disconnect()
+    if(localServer){
+        await localServer.stop({doCleanup: false})
+        localServer = null
+    }
+}
+
+module.exports = {db, closeDb}
