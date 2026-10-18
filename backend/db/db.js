@@ -8,7 +8,7 @@ const localMongoUrl = async () => {
     const dbPath = path.join(__dirname, '..', '.data')
     fs.mkdirSync(dbPath, {recursive: true})
     const server = await MongoMemoryServer.create({instance: {dbPath, storageEngine: 'wiredTiger'}})
-    console.log('MONGO_URL not set - using local MongoDB with data in backend/.data')
+    console.log('No MONGO_URL set: using the built-in local database (backend/.data)')
     return server.getUri('expense-tracker')
 }
 

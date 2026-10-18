@@ -73,3 +73,15 @@ test('goal routes reject invalid input before hitting the database', async () =>
     assert.strictEqual((await request(app).put('/api/v1/goals/nope').send({name: 'x', target: 5})).status, 400)
     assert.strictEqual((await request(app).post('/api/v1/goals/nope/contributions').send({amount: 5, date: '2026-10-01'})).status, 400)
 })
+
+test('bundled sample data is valid for every model', () => {
+    const sample = require('../seed/sample-data.json')
+    assert.ok(sample.incomes.length > 0 && sample.expenses.length > 0)
+    for (const t of [...sample.incomes, ...sample.expenses]) {
+        assert.strictEqual(validateTransaction(t), null, `invalid transaction ${JSON.stringify(t)}`)
+    }
+    for (const g of sample.goals) {
+        assert.strictEqual(validateGoal(g), null, `invalid goal ${g.name}`)
+        for (const c of g.contributions) assert.strictEqual(validateContribution(c), null)
+    }
+})

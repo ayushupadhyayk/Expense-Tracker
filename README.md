@@ -20,38 +20,42 @@ Live: https://expense-tracker-ayush.vercel.app/
 - **Goals**: set a target and optional deadline and get the weekly and monthly amount needed, a projected finish date from your real pace, dated milestones on a path, a month-by-month schedule and suggestions that show how many weeks each change saves
 - Light and dark themes, responsive down to phone width, respects reduced-motion settings
 
-## Run locally
+## Quick start
 
-Requires Node 20+.
-
-```bash
-# 1. Backend (http://localhost:5050)
-cd backend
-npm install
-npm run dev
-```
-
-If `MONGO_URL` is not set, the backend starts a local MongoDB automatically and stores
-data in `backend/.data` (first run downloads the MongoDB binary). To use your own database,
-copy `backend/.env.example` to `backend/.env` and set `MONGO_URL`.
+Requires [Node.js](https://nodejs.org) 20 or newer. Nothing else to install: the database is built in.
 
 ```bash
-# 2. Frontend (http://localhost:5173), in a second terminal
-cd frontend
-npm install
-npm run dev
+npm install     # installs the backend and frontend
+npm start       # starts both, then open http://localhost:5173
 ```
 
-The frontend talks to `http://localhost:5050/api/v1` by default; override with
-`VITE_API_URL` in `frontend/.env` (see `frontend/.env.example`).
+The first start downloads a local MongoDB binary (about 100 MB, once) and loads the bundled
+sample data, so the app opens with January 2022 to June 2023 already filled in.
 
-> Port 5000 is avoided because macOS uses it for AirPlay Receiver.
+| Command | What it does |
+|---|---|
+| `npm start` | Runs the backend (port 5050) and frontend (port 5173) together. Stop with Ctrl+C |
+| `npm run reset-data` | Restores the sample data. Stop the app first |
+| `npm test` | Runs the backend and frontend tests |
+
+## How the data is stored
+
+- The backend uses **MongoDB** through Mongoose, with models for incomes, expenses and goals.
+- With no configuration it runs its own local MongoDB and keeps the data in `backend/.data`
+  (not committed to git). Your changes persist between restarts.
+- When the database is empty, it loads `backend/seed/sample-data.json`. Existing data is never
+  overwritten. Set `SEED_SAMPLE_DATA=false` to start empty instead.
+- To use your own MongoDB (for example MongoDB Atlas), copy `backend/.env.example` to
+  `backend/.env` and set `MONGO_URL`. The sample data loads into it if it is empty.
+
+The frontend talks to `http://localhost:5050/api/v1` by default; override with `VITE_API_URL`
+in `frontend/.env` (see `frontend/.env.example`). Port 5000 is avoided because macOS uses it
+for AirPlay Receiver.
 
 ## Tests
 
 ```bash
-cd backend && npm test
-cd frontend && npm test
+npm test
 ```
 
 ## API
