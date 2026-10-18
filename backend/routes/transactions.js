@@ -1,14 +1,18 @@
-const { addExpense, getExpense, deleteExpense } = require('../controllers/expense');
-const { addIncome, getIncomes, deleteIncome } = require('../controllers/income');
-
 const router = require('express').Router();
+const { transactionController } = require('../controllers/transactions');
+const IncomeModel = require('../models/IncomeModel');
+const ExpenseModel = require('../models/ExpenseModel');
 
+const income = transactionController(IncomeModel, 'Income')
+const expense = transactionController(ExpenseModel, 'Expense')
 
-router.post('/add-income', addIncome)
-    .get('/get-incomes', getIncomes)
-    .delete('/delete-income/:id', deleteIncome)
-    .post('/add-expense', addExpense)
-    .get('/get-expenses', getExpense)
-    .delete('/delete-expense/:id', deleteExpense)
+router.post('/add-income', income.add)
+    .get('/get-incomes', income.getAll)
+    .put('/update-income/:id', income.update)
+    .delete('/delete-income/:id', income.remove)
+    .post('/add-expense', expense.add)
+    .get('/get-expenses', expense.getAll)
+    .put('/update-expense/:id', expense.update)
+    .delete('/delete-expense/:id', expense.remove)
 
 module.exports = router

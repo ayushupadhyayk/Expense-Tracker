@@ -1,25 +1,28 @@
 const express = require('express')
 const cors = require('cors');
-const { db } = require('./db/db');
-const {readdirSync} = require('fs')
-const app = express()
+const transactions = require('./routes/transactions');
 
-require('dotenv').config()
+const createApp = () => {
+    const app = express()
 
-const PORT = process.env.PORT
+    //middlewares
+    app.use(express.json())
+    // CORS_ORIGIN can be a comma-separated list; unset allows any origin.
+    const origins = process.env.CORS_ORIGIN?.split(',').map((o) => o.trim()).filter(Boolean)
+    app.use(cors(origins?.length ? {origin: origins} : undefined))
 
-//middlewares
-app.use(express.json())
-app.use(cors())
+    //routes
+    app.get('/api/v1/health', (req, res) => res.json({status: 'ok'}))
+    app.use('/api/v1', transactions)
 
-//routes
-readdirSync('./routes').map((route) => app.use('/api/v1', require('./routes/' + route)))
-
-const server = () => {
-    db()
-    app.listen(PORT, () => {
-        console.log('listening to port:', PORT)
+    app.use((req, res) => res.status(404).json({message: 'Not Found'}))
+    // Malformed JSON bodies and anything else unexpected.
+    app.use((err, req, res, next) => {
+        const status = err.status || err.statusCode || 500
+        res.status(status).json({message: status === 500 ? 'Server Error' : err.message})
     })
+
+    return app
 }
 
-server()
+module.exports = {createApp}
