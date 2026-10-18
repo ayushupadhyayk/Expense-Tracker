@@ -1,6 +1,7 @@
 const express = require('express')
 const cors = require('cors');
 const transactions = require('./routes/transactions');
+const goals = require('./routes/goals');
 
 const createApp = () => {
     const app = express()
@@ -14,6 +15,7 @@ const createApp = () => {
     //routes
     app.get('/api/v1/health', (req, res) => res.json({status: 'ok'}))
     app.use('/api/v1', transactions)
+    app.use('/api/v1', goals)
 
     app.use((req, res) => res.status(404).json({message: 'Not Found'}))
     // Malformed JSON bodies and anything else unexpected.

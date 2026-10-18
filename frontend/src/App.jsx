@@ -1,72 +1,96 @@
-import { useEffect, useState } from 'react'
-import Navigation from './components/Navigation'
-import Dashboard from './components/Dashboard'
-import TransactionsPage from './components/TransactionsPage'
-import AllTransactions from './components/AllTransactions'
-import { useGlobalContext } from './context/GlobalContext'
-import { useTheme } from './utils/useTheme'
+import { useCallback, useEffect, useState } from 'react'
+import avatar from './img/avatar.png'
+import { useData } from './context/DataContext'
+import { useRoute, useTheme } from './lib/useAppState'
+import { Icon } from './components/ui'
+import TransactionDrawer from './components/TransactionDrawer'
+import Overview from './pages/Overview'
+import Transactions from './pages/Transactions'
+import Reports from './pages/Reports'
+import Analysis from './pages/Analysis'
+import Goals from './pages/Goals'
 
-export const pages = [
-    {id: 'dashboard', title: 'Dashboard', icon: 'fa-chart-line'},
-    {id: 'transactions', title: 'Transactions', icon: 'fa-credit-card'},
-    {id: 'incomes', title: 'Incomes', icon: 'fa-money-bill-trend-up'},
-    {id: 'expenses', title: 'Expenses', icon: 'fa-money-bill-transfer'},
+const pages = [
+    {id: 'overview', title: 'Overview', icon: 'LayoutDashboard', Page: Overview},
+    {id: 'transactions', title: 'Transactions', icon: 'ArrowLeftRight', Page: Transactions},
+    {id: 'reports', title: 'Reports', icon: 'FileSpreadsheet', Page: Reports},
+    {id: 'analysis', title: 'Analysis', icon: 'ChartPie', Page: Analysis},
+    {id: 'goals', title: 'Goals', icon: 'Flag', Page: Goals},
 ]
 
 function Toast() {
-    const {toast, clearToast} = useGlobalContext()
-
+    const {toast, clearToast} = useData()
     useEffect(() => {
         if(!toast) return
-        const timer = setTimeout(clearToast, 3000)
+        const timer = setTimeout(clearToast, 3200)
         return () => clearTimeout(timer)
     }, [toast, clearToast])
-
     if(!toast) return null
     return (
-        <div className={`toast toast-${toast.kind}`} role="status" key={toast.id}>
-            <i className={`fa-solid ${toast.kind === 'error' ? 'fa-circle-exclamation' : 'fa-circle-check'}`}></i>
+        <div className={`toast ${toast.kind === 'error' ? 'error' : ''}`} role="status" key={toast.id}>
+            <Icon name={toast.kind === 'error' ? 'CircleAlert' : 'CircleCheck'} size={16} />
             {toast.message}
         </div>
     )
 }
 
-function App() {
-    const [active, setActive] = useState('dashboard')
+export default function App() {
     const [theme, toggleTheme] = useTheme()
-    const {loading, loadError, refresh} = useGlobalContext()
+    const [route, go] = useRoute(pages.map((p) => p.id), 'overview')
+    const {loading, loadError, refresh} = useData()
+    // Transaction drawer is shared by every page: {item?, type?} or null.
+    const [drawer, setDrawer] = useState(null)
+    const closeDrawer = useCallback(() => setDrawer(null), [])
 
-    const page = () => {
-        switch(active){
-            case 'transactions':
-                return <AllTransactions />
-            case 'incomes':
-                return <TransactionsPage type="income" />
-            case 'expenses':
-                return <TransactionsPage type="expense" />
-            default:
-                return <Dashboard theme={theme} />
-        }
-    }
+    const {Page} = pages.find((p) => p.id === route)
+    const openTransaction = useCallback((item, type) => setDrawer({item, type}), [])
 
     return (
-        <div className="app">
-            <div className="orb" aria-hidden="true"></div>
-            <div className="layout">
-                <Navigation pages={pages} active={active} setActive={setActive} theme={theme} toggleTheme={toggleTheme} />
-                <main className="panel main">
-                    {loadError && (
+        <div className="shell">
+            <aside className="spine">
+                <div className="brand">
+                    <div className="brand-mark" aria-hidden="true">E</div>
+                    <div>
+                        <div className="brand-name">Expense Tracker</div>
+                        <div className="brand-sub">Your money, in order</div>
+                    </div>
+                </div>
+                <nav className="nav" aria-label="Main">
+                    {pages.map((p) => (
+                        <button key={p.id} aria-current={route === p.id ? 'page' : undefined} onClick={() => go(p.id)}>
+                            <Icon name={p.icon} size={20} />
+                            <span>{p.title}</span>
+                        </button>
+                    ))}
+                </nav>
+                <div className="spine-foot">
+                    <button className="theme-switch" onClick={toggleTheme} aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}>
+                        <Icon name={theme === 'dark' ? 'Sun' : 'Moon'} size={18} />
+                        <span>{theme === 'dark' ? 'Light' : 'Dark'}</span>
+                    </button>
+                    <div className="owner">
+                        <img src={avatar} alt="" />
+                        <span>Ayush</span>
+                    </div>
+                </div>
+            </aside>
+
+            <main className="main">
+                {loadError && (
+                    <div className="page" style={{marginBottom: 20}}>
                         <div className="banner" role="alert">
-                            <span><i className="fa-solid fa-triangle-exclamation"></i> {loadError}</span>
-                            <button className="btn btn-ghost" onClick={refresh}>Retry</button>
+                            <span>{loadError}</span>
+                            <button className="btn btn-quiet btn-sm" onClick={refresh}>Try again</button>
                         </div>
-                    )}
-                    {loading ? <div className="loading"><i className="fa-solid fa-spinner fa-spin"></i> Loading…</div> : page()}
-                </main>
-            </div>
+                    </div>
+                )}
+                {loading
+                    ? <div className="loading">Loading your ledger…</div>
+                    : <Page theme={theme} go={go} openTransaction={openTransaction} />}
+            </main>
+
+            {drawer && <TransactionDrawer item={drawer.item} defaultType={drawer.type} onClose={closeDrawer} />}
             <Toast />
         </div>
     )
 }
-
-export default App
