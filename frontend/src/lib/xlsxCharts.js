@@ -27,7 +27,7 @@ const serTx = (series) => series.nameRef
     : `<c:tx><c:v>${esc(series.name)}</c:v></c:tx>`
 
 const title = (text) =>
-    `<c:title><c:tx><c:rich><a:bodyPr/><a:lstStyle/><a:p><a:pPr><a:defRPr sz="1300" b="1"/></a:pPr><a:r><a:rPr lang="en-US" sz="1300" b="1">${fill('14232B')}<a:latin typeface="Georgia"/></a:rPr><a:t>${esc(text)}</a:t></a:r></a:p></c:rich></c:tx><c:overlay val="0"/></c:title>`
+    `<c:title><c:tx><c:rich><a:bodyPr/><a:lstStyle/><a:p><a:pPr><a:defRPr sz="1300" b="1"/></a:pPr><a:r><a:rPr lang="en-US" sz="1300" b="1">${fill('14232B')}<a:latin typeface="Calibri"/></a:rPr><a:t>${esc(text)}</a:t></a:r></a:p></c:rich></c:tx><c:overlay val="0"/></c:title>`
 
 const legend = (pos) => `<c:legend><c:legendPos val="${pos}"/><c:overlay val="0"/>${textProps(900)}</c:legend>`
 

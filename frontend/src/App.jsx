@@ -48,13 +48,7 @@ export default function App() {
     return (
         <div className="shell">
             <aside className="spine">
-                <div className="brand">
-                    <div className="brand-mark" aria-hidden="true">E</div>
-                    <div>
-                        <div className="brand-name">Expense Tracker</div>
-                        <div className="brand-sub">Your money, in order</div>
-                    </div>
-                </div>
+                <div className="brand">Expense Tracker</div>
                 <nav className="nav" aria-label="Main">
                     {pages.map((p) => (
                         <button key={p.id} aria-current={route === p.id ? 'page' : undefined} onClick={() => go(p.id)}>

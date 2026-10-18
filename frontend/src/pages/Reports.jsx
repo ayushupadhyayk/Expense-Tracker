@@ -4,7 +4,7 @@ import { useChartTheme, Breakdown, FlowChart } from '../components/charts'
 import { Delta, Empty, Icon, PageHead } from '../components/ui'
 import PeriodPicker from '../components/PeriodPicker'
 import TxList from '../components/TxList'
-import { formatDate, formatRange, periodRange, previousRange, todayKey } from '../lib/dates'
+import { comparisonRange, formatDate, formatRange, periodRange } from '../lib/dates'
 import { buckets, byCategory, summarize } from '../lib/stats'
 import { formatMoney, formatPct } from '../lib/money'
 import { findCategory } from '../lib/categories'
@@ -12,14 +12,14 @@ import { findCategory } from '../lib/categories'
 const titles = {week: 'Weekly report', month: 'Monthly report', custom: 'Report'}
 
 export default function Reports({theme, openTransaction}) {
-    const {incomes, expenses, goals, notify} = useData()
+    const {incomes, expenses, goals, notify, asOf, historic} = useData()
     const t = useChartTheme(theme)
-    const [period, setPeriod] = useState(() => ({mode: 'month', range: periodRange('month', todayKey())}))
+    const [period, setPeriod] = useState(() => ({mode: 'month', range: periodRange('month', asOf)}))
     const [exporting, setExporting] = useState(false)
     const {mode, range} = period
 
     const cur = summarize(incomes, expenses, range)
-    const prevRange = previousRange(range)
+    const prevRange = comparisonRange(range, mode)
     const prev = summarize(incomes, expenses, prevRange)
     const rows = buckets(incomes, expenses, range)
     const spend = byCategory(cur.expenses, 'expense', {group: true})
@@ -61,7 +61,7 @@ export default function Reports({theme, openTransaction}) {
                 Pick a week, a month or any range. The Excel file includes pie charts, a trend chart and every transaction.
             </PageHead>
 
-            <PeriodPicker value={period} onChange={setPeriod} />
+            <PeriodPicker value={period} onChange={setPeriod} today={asOf} historic={historic} />
 
             <article className="statement">
                 <header className="statement-head">

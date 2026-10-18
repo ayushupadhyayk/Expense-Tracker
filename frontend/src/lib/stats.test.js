@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { buckets, byCategory, change, insights, recurring, summarize, weekdaySpend } from './stats'
-import { periodRange, previousRange, shiftRange, startOfWeek, endOfMonth, addMonths } from './dates'
+import { comparisonRange, periodRange, previousRange, shiftRange, startOfWeek, endOfMonth, addMonths } from './dates'
 import { planGoal } from './goals'
 
 const inc = (amount, date, category = 'salary') => ({type: 'income', title: 'Pay', category, description: 'x', amount, date: `${date}T00:00:00Z`})
@@ -18,6 +18,10 @@ describe('dates', () => {
         expect(shiftRange('month', {start: '2026-10-01', end: '2026-10-31'}, -1)).toEqual({start: '2026-09-01', end: '2026-09-30'})
         expect(shiftRange('custom', {start: '2026-10-01', end: '2026-10-10'}, 1)).toEqual({start: '2026-10-11', end: '2026-10-20'})
         expect(previousRange({start: '2026-10-11', end: '2026-10-20'})).toEqual({start: '2026-10-01', end: '2026-10-10'})
+        // Months compare with the whole previous calendar month, not "the 30 days before".
+        expect(comparisonRange({start: '2023-06-01', end: '2023-06-30'}, 'month')).toEqual({start: '2023-05-01', end: '2023-05-31'})
+        expect(comparisonRange({start: '2023-06-05', end: '2023-06-11'}, 'week')).toEqual({start: '2023-05-29', end: '2023-06-04'})
+        expect(comparisonRange({start: '2023-06-11', end: '2023-06-20'}, 'custom')).toEqual({start: '2023-06-01', end: '2023-06-10'})
     })
 })
 

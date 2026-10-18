@@ -1,7 +1,7 @@
 import { addCharts } from './xlsxCharts'
 import { buckets, byCategory, byDateDesc, insights, summarize } from './stats'
 import { categoryColor, findCategory, incomeCategories, SLOTS } from './categories'
-import { formatDate, formatRange, fromKey, previousRange, todayKey, toKey } from './dates'
+import { comparisonRange, formatDate, formatRange, fromKey, todayKey, toKey } from './dates'
 import { currencySymbol } from './money'
 import { planGoal } from './goals'
 
@@ -26,7 +26,7 @@ const styleHeader = (row) => {
 
 const sectionTitle = (ws, cell, text) => {
     ws.getCell(cell).value = text
-    ws.getCell(cell).font = {name: 'Georgia', size: 13, bold: true, color: {argb: INK}}
+    ws.getCell(cell).font = {name: 'Calibri', size: 13, bold: true, color: {argb: INK}}
 }
 
 const bandRows = (ws, from, to, cols) => {
@@ -52,7 +52,7 @@ export async function buildReport({range, mode, incomes, expenses, goals = [], o
     const pct = '0%'
 
     const cur = summarize(incomes, expenses, range)
-    const prevRange = previousRange(range)
+    const prevRange = comparisonRange(range, mode)
     const prev = summarize(incomes, expenses, prevRange)
     const periodLabel = formatRange(range, mode)
     const kind = mode === 'week' ? 'Weekly' : mode === 'month' ? 'Monthly' : 'Custom range'
@@ -68,7 +68,7 @@ export async function buildReport({range, mode, incomes, expenses, goals = [], o
 
     ws.mergeCells('A1:E1')
     ws.getCell('A1').value = `${kind} report`
-    ws.getCell('A1').font = {name: 'Georgia', size: 22, bold: true, color: {argb: INK}}
+    ws.getCell('A1').font = {name: 'Calibri', size: 22, bold: true, color: {argb: INK}}
     ws.getRow(1).height = 34
     ws.getCell('A2').value = periodLabel
     ws.getCell('A2').font = {size: 13, color: {argb: INK}}
@@ -182,7 +182,7 @@ export async function buildReport({range, mode, incomes, expenses, goals = [], o
     const rows = buckets(incomes, expenses, range)
     const unitName = {day: 'Day', week: 'Week starting', month: 'Month'}[rows[0]?.unit || 'day']
     trend.getCell('A1').value = `Income and expenses by ${rows[0]?.unit || 'day'}`
-    trend.getCell('A1').font = {name: 'Georgia', size: 16, bold: true, color: {argb: INK}}
+    trend.getCell('A1').font = {name: 'Calibri', size: 16, bold: true, color: {argb: INK}}
     trend.getRow(3).values = [unitName, 'Income', 'Expenses', 'Net']
     styleHeader(trend.getRow(3))
     rows.forEach((b, i) => {
@@ -255,7 +255,7 @@ export async function buildReport({range, mode, incomes, expenses, goals = [], o
         const gs = wb.addWorksheet('Goals', {views: [{showGridLines: false}]})
         gs.columns = [{width: 26}, {width: 14}, {width: 14}, {width: 12}, {width: 16}, {width: 16}, {width: 18}]
         gs.getCell('A1').value = 'Goals'
-        gs.getCell('A1').font = {name: 'Georgia', size: 16, bold: true, color: {argb: INK}}
+        gs.getCell('A1').font = {name: 'Calibri', size: 16, bold: true, color: {argb: INK}}
         gs.getRow(3).values = ['Goal', 'Target', 'Saved', 'Progress', 'Monthly plan', 'Deadline', 'Projected finish']
         styleHeader(gs.getRow(3))
         goals.forEach((g, i) => {
@@ -278,7 +278,7 @@ export async function buildReport({range, mode, incomes, expenses, goals = [], o
     const ins = wb.addWorksheet('Insights', {views: [{showGridLines: false}]})
     ins.columns = [{width: 4}, {width: 60}, {width: 70}]
     ins.getCell('B1').value = 'What stands out'
-    ins.getCell('B1').font = {name: 'Georgia', size: 16, bold: true, color: {argb: INK}}
+    ins.getCell('B1').font = {name: 'Calibri', size: 16, bold: true, color: {argb: INK}}
     const toneColor = {good: argb(INCOME), warn: 'FFB88A3E', bad: argb(EXPENSE), info: MUTED}
     insights(incomes, expenses, range).forEach((item, i) => {
         const row = ins.getRow(3 + i)

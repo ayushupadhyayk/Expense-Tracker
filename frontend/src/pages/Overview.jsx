@@ -2,40 +2,36 @@ import { useData } from '../context/DataContext'
 import { useChartTheme, BalanceChart, Breakdown } from '../components/charts'
 import { Delta, Icon, PageHead } from '../components/ui'
 import { TxRow } from '../components/TxList'
-import { addDays, formatMonth, periodRange, previousRange, todayKey, daysBetween } from '../lib/dates'
+import { addDays, addMonths, formatMonth, periodRange, todayKey, daysBetween } from '../lib/dates'
 import { balanceSeries, byCategory, byDateDesc, insights, monthlySurplus, summarize } from '../lib/stats'
 import { formatMoney, formatMoneyWhole, formatPct } from '../lib/money'
 import { planGoal } from '../lib/goals'
 
-const greeting = () => {
-    const h = new Date().getHours()
-    return h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening'
-}
-
 export default function Overview({theme, go, openTransaction}) {
-    const {incomes, expenses, goals} = useData()
+    const {incomes, expenses, goals, asOf, historic} = useData()
     const t = useChartTheme(theme)
-    const today = todayKey()
+    const today = asOf
     const month = periodRange('month', today)
     const soFar = {start: month.start, end: today}
     const cur = summarize(incomes, expenses, soFar)
-    // Same number of days into last month, for a fair comparison.
-    const lastMonth = previousRange(month)
-    const prev = summarize(incomes, expenses, {start: lastMonth.start, end: addDays(lastMonth.start, daysBetween(month.start, today))})
+    // Same number of days into the previous calendar month, for a fair comparison.
+    const lastMonthStart = addMonths(month.start, -1)
+    const prev = summarize(incomes, expenses, {start: lastMonthStart, end: addDays(lastMonthStart, daysBetween(month.start, today))})
     const balance = summarize(incomes, expenses, {start: '1970-01-01', end: today}).net
     const recent = [...incomes, ...expenses].sort(byDateDesc).slice(0, 6)
-    const surplus = monthlySurplus(incomes, expenses, today)
-    const goalPlans = goals.map((g) => ({goal: g, plan: planGoal(g, {surplus, today})}))
+    const surplus = monthlySurplus(incomes, expenses, addDays(today, 1))
+    // Goals look forward, so they plan from the real date.
+    const goalPlans = goals.map((g) => ({goal: g, plan: planGoal(g, {surplus, today: todayKey()})}))
     const tips = insights(incomes, expenses, soFar, today).slice(0, 3)
     const series = balanceSeries(incomes, expenses, {start: addDays(today, -89), end: today})
 
     return (
         <div className="page">
             <PageHead
-                title={`${greeting()}, Ayush`}
+                title="Overview"
                 actions={<button className="btn btn-primary" onClick={() => openTransaction(null, 'expense')}><Icon name="Plus" size={16} /> Add transaction</button>}
             >
-                {formatMonth(today)} so far, up to today.
+                {historic ? `${formatMonth(today)}, your latest month of records.` : `${formatMonth(today)} so far, up to today.`}
             </PageHead>
 
             <dl className="ledger" style={{'--cols': 4}}>

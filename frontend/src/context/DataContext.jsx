@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import axios from 'axios'
+import { todayKey, toKey } from '../lib/dates'
 
 const api = axios.create({
     baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5050/api/v1',
@@ -70,7 +71,18 @@ export function DataProvider({children}) {
             withErrorToast(mutate(() => api.delete(`goals/${id}/contributions/${contributionId}`))),
     }), [mutate, withErrorToast])
 
+    // Default periods anchor to the latest record (capped at today), so past data opens on its own months.
+    const asOf = useMemo(() => {
+        const today = todayKey()
+        let latest = ''
+        for(const t of incomes) if(toKey(t.date) > latest) latest = toKey(t.date)
+        for(const t of expenses) if(toKey(t.date) > latest) latest = toKey(t.date)
+        return latest && latest < today ? latest : today
+    }, [incomes, expenses])
+
     const value = useMemo(() => ({
+        asOf,
+        historic: asOf < todayKey(),
         incomes,
         expenses,
         goals,
@@ -81,7 +93,7 @@ export function DataProvider({children}) {
         notify,
         clearToast: () => setToast(null),
         ...actions,
-    }), [incomes, expenses, goals, loading, loadError, refresh, toast, notify, actions])
+    }), [asOf, incomes, expenses, goals, loading, loadError, refresh, toast, notify, actions])
 
     return <DataContext.Provider value={value}>{children}</DataContext.Provider>
 }

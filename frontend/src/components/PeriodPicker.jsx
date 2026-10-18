@@ -18,10 +18,10 @@ export const customPresets = (today = todayKey()) => [
 /**
  * Week / month / custom period control.
  * value: {mode, range}; onChange receives the next {mode, range}.
+ * today: the date presets count back from (the latest record when viewing past data).
  */
-export default function PeriodPicker({value, onChange}) {
+export default function PeriodPicker({value, onChange, today = todayKey(), historic = false}) {
     const {mode, range} = value
-    const today = todayKey()
     const presets = customPresets(today)
     const atPresent = range.end >= today
     const activePreset = presets.find((p) => p.range.start === range.start && p.range.end === range.end)?.id
@@ -67,7 +67,7 @@ export default function PeriodPicker({value, onChange}) {
                     </button>
                     {!atPresent && (
                         <button className="btn btn-text btn-sm" onClick={() => onChange({mode, range: periodRange(mode, today)})}>
-                            This {mode}
+                            {historic ? `Latest ${mode}` : `This ${mode}`}
                         </button>
                     )}
                 </div>

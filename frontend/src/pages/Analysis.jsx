@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useData } from '../context/DataContext'
 import { useChartTheme, Breakdown, FlowChart, WeekdayChart } from '../components/charts'
 import { Icon, PageHead, Swatch } from '../components/ui'
-import { addDays, addMonths, formatDate, previousRange, rangeLength, startOfMonth, todayKey, toKey } from '../lib/dates'
+import { addDays, addMonths, formatDate, previousRange, rangeLength, startOfMonth, toKey } from '../lib/dates'
 import { buckets, byCategory, hasHistoryBefore, insights, recurring, summarize, weekdaySpend } from '../lib/stats'
 import { formatMoney, formatMoneyWhole, formatPct, signedPct } from '../lib/money'
 import { categoryColor, findCategory } from '../lib/categories'
@@ -19,9 +19,9 @@ const windows = (today, earliest) => [
 ]
 
 export default function Analysis({theme}) {
-    const {incomes, expenses} = useData()
+    const {incomes, expenses, asOf} = useData()
     const t = useChartTheme(theme)
-    const today = todayKey()
+    const today = asOf
     const all = [...incomes, ...expenses]
     const earliest = all.length ? all.map((x) => toKey(x.date)).sort()[0] : today
     const options = windows(today, earliest)

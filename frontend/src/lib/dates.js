@@ -54,6 +54,11 @@ export const previousRange = (range) => {
     return {start: addDays(range.start, -len), end: addDays(range.start, -1)}
 }
 
+// What a report compares against: the previous calendar month or week, or the
+// equal-length period before a custom range.
+export const comparisonRange = (range, mode) =>
+    mode === 'month' || mode === 'week' ? shiftRange(mode, range, -1) : previousRange(range)
+
 export const eachDay = ({start, end}) => {
     const days = []
     for(let k = start; k <= end; k = addDays(k, 1)) days.push(k)
