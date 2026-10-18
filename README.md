@@ -4,6 +4,23 @@ Track incomes and expenses with a dashboard, charts, filters and CSV export.
 
 Live: https://expense-tracker-ayush.vercel.app/
 
+## Background
+
+This project grew out of my earlier
+**[Expense-Manager](https://github.com/ayushupadhyayk/Expense-Manager)**, built in May 2023 as
+the first version of my final semester project. Expense-Manager is where I set up the MERN
+stack and built user registration and login. Expense-Tracker followed the next day and kept
+the same foundation:
+
+- a backend organised into models, controllers and routes
+- Mongoose connecting to MongoDB through a `MONGO_URL` setting
+- versioned `/api/v1` routes
+- a React frontend calling the API with axios
+
+It moved the focus from user accounts to the actual money tracking (incomes, expenses, a
+dashboard and charts), with separate `frontend/` and `backend/` folders. It has since grown
+into the full app described below.
+
 ## Stack
 
 - **Frontend:** React 19 + Vite, Chart.js (`frontend/`)
