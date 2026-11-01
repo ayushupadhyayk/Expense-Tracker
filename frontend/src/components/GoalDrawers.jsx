@@ -12,17 +12,17 @@ const ideas = [
 ]
 
 export function GoalDrawer({goal, onClose, onSaved}) {
-    const {saveGoal} = useData()
+    const {saveGoal, asOf} = useData()
     const [input, setInput] = useState(() => goal
         ? {name: goal.name, target: String(goal.target), deadline: goal.deadline ? toKey(goal.deadline) : '', startingAmount: ''}
-        : {name: '', target: '', deadline: addMonths(todayKey(), 6), startingAmount: ''})
+        : {name: '', target: '', deadline: addMonths(asOf, 6), startingAmount: ''})
     const [error, setError] = useState('')
     const [saving, setSaving] = useState(false)
     const set = (name) => (e) => { setInput({...input, [name]: e.target.value}); setError('') }
 
     const submit = async (e) => {
         e.preventDefault()
-        if(input.deadline && input.deadline <= todayKey()){
+        if(input.deadline && input.deadline <= asOf){
             setError('Pick a deadline in the future, or leave it empty.')
             return
         }
@@ -51,7 +51,7 @@ export function GoalDrawer({goal, onClose, onSaved}) {
                     <div className="presets" role="group" aria-label="Ideas">
                         {ideas.map((i) => (
                             <button type="button" key={i.name} className="chip"
-                                onClick={() => setInput({...input, name: i.name, target: String(i.target), deadline: addMonths(todayKey(), i.months)})}>
+                                onClick={() => setInput({...input, name: i.name, target: String(i.target), deadline: addMonths(asOf, i.months)})}>
                                 {i.name}
                             </button>
                         ))}
@@ -70,7 +70,7 @@ export function GoalDrawer({goal, onClose, onSaved}) {
                 </label>
                 <label className="field">
                     <span>Deadline</span>
-                    <input className="input" type="date" value={input.deadline} min={todayKey()} onChange={set('deadline')} />
+                    <input className="input" type="date" value={input.deadline} min={asOf} onChange={set('deadline')} />
                     <small>Optional. With a deadline we work out what to save each week; without one we plan from your current pace.</small>
                 </label>
                 {!goal && (
@@ -87,9 +87,9 @@ export function GoalDrawer({goal, onClose, onSaved}) {
 }
 
 export function ContributionDrawer({goal, plan, onClose}) {
-    const {addContribution} = useData()
+    const {addContribution, asOf} = useData()
     const [direction, setDirection] = useState('in')
-    const [input, setInput] = useState({amount: plan.planWeekly > 0 ? String(Math.ceil(plan.planWeekly)) : '', date: todayKey(), note: ''})
+    const [input, setInput] = useState({amount: plan.planWeekly > 0 ? String(Math.ceil(plan.planWeekly)) : '', date: asOf, note: ''})
     const [error, setError] = useState('')
     const [saving, setSaving] = useState(false)
     const set = (name) => (e) => { setInput({...input, [name]: e.target.value}); setError('') }

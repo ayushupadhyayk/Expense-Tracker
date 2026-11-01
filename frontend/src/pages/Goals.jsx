@@ -3,7 +3,7 @@ import { useData } from '../context/DataContext'
 import { Empty, Icon, PageHead } from '../components/ui'
 import GoalPath from '../components/GoalPath'
 import { ContributionDrawer, GoalDrawer } from '../components/GoalDrawers'
-import { addDays, formatDate, formatMonth, formatShortMonth, todayKey, daysBetween } from '../lib/dates'
+import { addDays, formatDate, formatMonth, formatShortMonth, daysBetween } from '../lib/dates'
 import { formatMoney, formatMoneyWhole, formatPct } from '../lib/money'
 import { allocation, planGoal } from '../lib/goals'
 import { discretionaryAverages, monthlySurplus } from '../lib/stats'
@@ -173,11 +173,11 @@ function GoalDetail({goal, plan, onAdd, onEdit}) {
 
 export default function Goals() {
     const {goals, incomes, expenses, asOf} = useData()
-    const today = todayKey()
+    const today = asOf
     const [selected, setSelected] = useState(null)
     const [drawer, setDrawer] = useState(null) // 'new' | 'edit' | 'add'
 
-    // Spending habits come from the latest months on record; the plan itself runs from today.
+    // Everything runs "as of" the latest record (today for live data), so historic data plans consistently.
     const surplus = monthlySurplus(incomes, expenses, addDays(asOf, 1))
     const discretionary = discretionaryAverages(expenses, addDays(asOf, 1))
     const plans = goals.map((g) => ({goal: g, plan: planGoal(g, {surplus, discretionary, today})}))

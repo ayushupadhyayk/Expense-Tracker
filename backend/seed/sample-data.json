@@ -2891,60 +2891,80 @@
     {
       "name": "New laptop",
       "target": 1400,
-      "deadline": "2027-03-31",
-      "createdAt": "2026-10-18",
+      "deadline": "2023-12-31",
+      "createdAt": "2023-01-10",
       "contributions": [
         {
+          "amount": 250,
+          "date": "2023-01-10",
+          "note": "Starting amount"
+        },
+        {
           "amount": 150,
-          "date": "2026-08-01",
+          "date": "2023-03-01",
           "note": ""
         },
         {
           "amount": 150,
-          "date": "2026-09-01",
+          "date": "2023-04-01",
           "note": ""
         },
         {
           "amount": 120,
-          "date": "2026-10-01",
+          "date": "2023-05-01",
           "note": ""
         },
         {
-          "amount": 250,
-          "date": "2026-10-18",
-          "note": "Starting amount"
+          "amount": 150,
+          "date": "2023-06-01",
+          "note": ""
         }
       ]
     },
     {
       "name": "Emergency fund",
       "target": 3000,
-      "deadline": "2027-06-30",
-      "createdAt": "2026-10-18",
+      "deadline": "2024-06-30",
+      "createdAt": "2022-12-15",
       "contributions": [
         {
+          "amount": 500,
+          "date": "2022-12-15",
+          "note": "Starting amount"
+        },
+        {
           "amount": 300,
-          "date": "2026-07-15",
+          "date": "2023-01-15",
           "note": ""
         },
         {
           "amount": 200,
-          "date": "2026-08-15",
+          "date": "2023-02-15",
           "note": ""
         },
         {
           "amount": 200,
-          "date": "2026-09-15",
+          "date": "2023-03-15",
           "note": ""
         },
         {
           "amount": -100,
-          "date": "2026-09-30",
-          "note": ""
+          "date": "2023-03-31",
+          "note": "Car repair"
         },
         {
           "amount": 200,
-          "date": "2026-10-15",
+          "date": "2023-04-15",
+          "note": ""
+        },
+        {
+          "amount": 250,
+          "date": "2023-05-15",
+          "note": ""
+        },
+        {
+          "amount": 250,
+          "date": "2023-06-15",
           "note": ""
         }
       ]
@@ -2953,7 +2973,7 @@
       "name": "Summer trip",
       "target": 900,
       "deadline": null,
-      "createdAt": "2026-10-18",
+      "createdAt": "2023-06-20",
       "contributions": []
     }
   ]
