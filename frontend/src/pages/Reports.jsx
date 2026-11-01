@@ -34,7 +34,7 @@ export default function Reports({theme, openTransaction}) {
         try {
             // Loaded on demand: the spreadsheet library is large and only needed here.
             const {buildReport, downloadBytes, reportFilename} = await import('../lib/excel')
-            const bytes = await buildReport({range, mode, incomes, expenses, goals, owner: 'Ayush'})
+            const bytes = await buildReport({range, mode, incomes, expenses, goals, owner: 'Ayush', asOf})
             downloadBytes(bytes, reportFilename(range, mode))
             notify('Excel report downloaded')
         } catch (err) {

@@ -45,7 +45,7 @@ const date = (key) => fromKey(toKey(key))
  * Builds the report workbook and returns it as a Uint8Array (.xlsx).
  * range: {start, end}; mode: 'week' | 'month' | 'custom'
  */
-export async function buildReport({range, mode, incomes, expenses, goals = [], owner = ''}) {
+export async function buildReport({range, mode, incomes, expenses, goals = [], owner = '', asOf = todayKey()}) {
     const {default: ExcelJS} = await import('exceljs')
     const money = `"${currencySymbol()}"#,##0.00;[Red]-"${currencySymbol()}"#,##0.00`
     const moneyAxis = `"${currencySymbol()}"#,##0`
@@ -259,7 +259,7 @@ export async function buildReport({range, mode, incomes, expenses, goals = [], o
         gs.getRow(3).values = ['Goal', 'Target', 'Saved', 'Progress', 'Monthly plan', 'Deadline', 'Projected finish']
         styleHeader(gs.getRow(3))
         goals.forEach((g, i) => {
-            const p = planGoal(g)
+            const p = planGoal(g, {today: asOf})
             const n = 4 + i
             gs.getRow(n).values = [g.name, p.target, p.saved, {formula: `IF(B${n}=0,0,MIN(1,C${n}/B${n}))`}, p.planMonthly,
                 p.deadline ? date(p.deadline) : 'None', p.projected ? date(p.projected) : 'Not enough data']
